@@ -10,9 +10,9 @@ namespace LibraryManagement
     {
         public override Roles Role => Roles.Student;
 
-        public override void Dashboard(List<User> ulist, List<Book> bookList)
+        public override void Dashboard()
         {
-            var op = new Operations(null, bookList, this); ;
+            var op = new Operations(this); ;
             var choice = "";
             while (choice != "q")
             {

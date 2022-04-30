@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LibraryManagement
 {
     /// <summary>
-    /// To add colors to strings in the console.
+    /// To add colors to text in the console. Also avoid repetetive code in the program.
     /// </summary>
     public static class Beautify
     {
@@ -34,7 +34,7 @@ namespace LibraryManagement
 
         public static void Warning(string str)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("\n\t\t" + str);
             Console.ResetColor();
         }

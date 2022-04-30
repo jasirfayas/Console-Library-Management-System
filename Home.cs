@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement
 {
-    class Program
+    class Home
     {
         public static List<User> allUsers = new List<User>();
         public static List<Book> allBooks = new List<Book>();
@@ -59,7 +59,7 @@ namespace LibraryManagement
                 Beautify.Success("Successfully logged in !");
                 Beautify.ClearScreen("go to your dashboard...");
 
-                loggedUser.Dashboard(allUsers, allBooks);
+                loggedUser.Dashboard();
             }
         }
 

@@ -19,6 +19,6 @@ namespace LibraryManagement
         {
             Console.WriteLine($"\t\t{Username,-20}{Password,-20}{Name,-20}{Role}");
         }
-        public abstract void Dashboard(List<User> userList, List<Book> bookList);
+        public abstract void Dashboard();
     }
 }

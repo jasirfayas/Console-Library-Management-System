@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace LibraryManagement
 {
-    public class Operations
+    public class Operations //all the users call their methods from this class
     {
-        private List<User> allUsers;
-        private List<Book> allBooks;
         private User currentUser;
-        public Operations(List<User> userList, List<Book> bookList, User currUser)
+        public Operations(User activeUser)
         {
-            allUsers = userList;
-            allBooks = bookList;
-            currentUser = currUser;
+            currentUser = activeUser;
         }
 
         //private methods, used only inside this class
@@ -30,7 +26,7 @@ namespace LibraryManagement
         }
         User GetUserObject(string uName)
         {
-            foreach (var user in allUsers)
+            foreach (var user in Home.allUsers)
             {
                 if (uName == user.Username) //username exists
                 {
@@ -51,7 +47,7 @@ namespace LibraryManagement
                     goto Username;
                 if (GetUserObject(uName) != null)
                 {
-                    Console.WriteLine("\n\t\tUsername already exists!");
+                    Beautify.Warning("Username already exists!");
                     return;
                 }
                 userObj.Username = uName;
@@ -68,7 +64,7 @@ namespace LibraryManagement
                 if (CheckIfEmpty(userObj.Name, "Full Name"))
                     goto FullName;
 
-                allUsers.Add(userObj);
+                Home.allUsers.Add(userObj);
                 Beautify.Success("user is added to the database.");
                 success = true;
             }
@@ -143,6 +139,12 @@ namespace LibraryManagement
                     case "1":
                         Console.Write("\n\t\tADD NEW ADMIN: ");
                         var admin = new Admin();
+                        int adminCount = Home.allUsers.Count(user => user.Role == Roles.Admin);
+                        if (adminCount == 5)
+                        {
+                            Beautify.Error("Maximum admin count reached!");
+                            break;
+                        }
                         AddUserToList(admin);
                         break;
                     case "2":
@@ -183,7 +185,7 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[USER DATABASE]");
             Console.WriteLine($"\n\t\t{"Username",-20}{"Password",-20}{"Full Name",-20}Role");
             Console.WriteLine("\t\t".PadRight(70, '-'));
-            foreach (var user in allUsers)
+            foreach (User user in Home.allUsers)
             {
                 user.DisplayDetails();
             }
@@ -193,14 +195,26 @@ namespace LibraryManagement
         {
             Console.WriteLine("\n\n\t\t[DELETE USER]");
             Console.Write("\t\tEnter the username to delete: ");
-            var uName = Console.ReadLine();
-            if (GetUserObject(uName) == null)
+            string uName = Console.ReadLine();
+            User delUser = GetUserObject(uName);
+
+            if (delUser == null)
             {
-                Console.WriteLine("\n\tUser doesn't exist!");
+                Beautify.Error("User doesn't exist!");
+                Beautify.ClearScreen("continue");
                 return;
             }
-            User delUser = GetUserObject(uName);
-            allUsers.Remove(delUser);
+
+            int adminCount = Home.allUsers.Count(user => user.Role == Roles.Admin);
+
+            if (delUser.Role == Roles.Admin && adminCount == 1)
+            {
+                Beautify.Error("Can't delete the only admin!");
+            }
+            else
+            {
+                Home.allUsers.Remove(delUser);
+            }
             Beautify.ClearScreen("continue");
         }
         internal void UpdateOwnDetails(User userObj)
@@ -208,7 +222,7 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[UPDATE YOUR DETAILS]");
             Console.WriteLine("\n\t\t(1) Username\t(2) Password\t(3) Full Name\t(4) Go Back");
             Console.Write("\n\t\tChoose an option: ");
-            var choice = Console.ReadLine();
+            string choice = Console.ReadLine();
             switch (choice)
             {
                 case "1":
@@ -241,7 +255,7 @@ namespace LibraryManagement
             bk.Title = Console.ReadLine();
             Console.Write("\t\tEnter Author name: ");
             bk.Author = Console.ReadLine();
-            allBooks.Add(bk);
+            Home.allBooks.Add(bk);
             Beautify.Success("Book added successfully!");
             Beautify.ClearScreen("continue");
         }
@@ -250,11 +264,11 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[DELETE A BOOK]");
             Console.Write("\n\t\tEnter title of the book: ");
             var inputTitle = Console.ReadLine();
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 if (inputTitle == book.Title)
                 {
-                    allBooks.Remove(book);
+                    Home.allBooks.Remove(book);
                     Beautify.Warning("Book is deleted!");
                     Beautify.ClearScreen("continue");
                     return;
@@ -268,7 +282,7 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[BOOKS DATABASE]");
             Console.WriteLine($"\n\t\t{"Title",-20}{"Author",-20}{"Status",-15}Borrowed by");
             Console.WriteLine("\t\t".PadRight(70, '-'));
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 book.DisplayDetails();
             }
@@ -279,7 +293,7 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[BOOKS TO ISSUE]");
             Console.WriteLine($"\n\t\t{"Title",-20}{"Author",-20}{"Status",-15}Borrowed by");
             Console.WriteLine("\t\t".PadRight(70, '-'));
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 if (book.ReservedUser != null)
                 {
@@ -288,7 +302,7 @@ namespace LibraryManagement
             }
             Console.Write("\n\t\tEnter title of the book to issue: ");
             var bTitle = Console.ReadLine();
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 if (bTitle == book.Title)
                 {
@@ -309,7 +323,7 @@ namespace LibraryManagement
             Console.WriteLine("\n\n\t\t[BOOKS TO RETURN]");
             Console.WriteLine($"\n\t\t{"Title",-20}{"Author",-20}{"Status",-15}Borrowed by");
             Console.WriteLine("\t\t".PadRight(70, '-'));
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 if (book.Status == BookStatus.Return)
                 {
@@ -318,7 +332,7 @@ namespace LibraryManagement
             }
             Console.Write("\n\t\tEnter title of the book to return: ");
             var bTitle = Console.ReadLine();
-            foreach (var book in allBooks)
+            foreach (var book in Home.allBooks)
             {
                 if (bTitle == book.Title)
                 {
@@ -340,7 +354,7 @@ namespace LibraryManagement
             {
                 Console.Write("\n\t\tEnter title of the book: ");
                 var bTitle = Console.ReadLine();
-                foreach (var book in allBooks)
+                foreach (var book in Home.allBooks)
                 {
                     if (bTitle == book.Title)
                     {
