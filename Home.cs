@@ -20,12 +20,11 @@ namespace LibraryManagement
 
             while (true) //user login and password entering
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.WriteLine("\n\n\t\tWelcome to the Library Management System!");
                 Console.ResetColor();
                 Console.WriteLine($"\n\t\t{"".PadRight(10, '~')} LOGIN {"".PadRight(10, '~')}");
 
-                bool userExists = false;
                 Console.Write("\n\t\tEnter Username: ");
                 var username = Console.ReadLine();
                 User loggedUser = default;
@@ -34,13 +33,12 @@ namespace LibraryManagement
                 {
                     if (username == user.Username)
                     {
-                        userExists = true;
                         loggedUser = user;
                         break;
                     }
                 }
 
-                if (!userExists)
+                if (loggedUser == default)
                 {
                     Beautify.Error("Invalid username!");
                     Beautify.ClearScreen("go back..");

@@ -14,7 +14,7 @@ namespace LibraryManagement
         public static void ClearScreen(string str)
         {
             Console.Write("\n\n\t\tPress any key to " + str + "...");
-            Console.ReadKey();
+            Console.ReadKey(true);
             Console.Clear();
         }
 
